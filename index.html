@@ -16,17 +16,17 @@
                 color: #ffffff;
                 font-weight: 700;
                 font-size: 48px;
-                white-space: nowrap;          /* Prevent line breaks */
-                overflow: hidden;             /* Hide the text that overflows */
-                border-right: 3px solid white;/* Create a cursor effect */
-                width: 0;                     /* Start with zero width */
-                animation: typing 3s steps(6, end), blink 0.75s step-end infinite; /* 6 steps for "Hello." */
+                white-space: nowrap;         /* Prevent line breaks */
+                overflow: hidden;            /* Hide overflowing text */
+                border-right: 3px solid white; /* Create a cursor effect */
+                width: 12ch;                 /* Limit width to fit 6 characters ("Hello.") */
+                animation: typing 7s steps(6, end), blink 0.75s step-end infinite; /* 6 steps for "Hello." */
             }
 
             /* Typing effect */
             @keyframes typing {
                 from { width: 0; }
-                to { width: 100%; }
+                to { width: 12ch; } /* 12ch matches the width of 6 characters */
             }
 
             /* Blinking cursor effect */
