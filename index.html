@@ -13,19 +13,36 @@
             }
 
             h1 {
-                color: #ffffff; /* Change text color for visibility */
+                color: #ffffff;
                 font-weight: 700;
                 font-size: 48px;
+                white-space: nowrap;          /* Prevent line breaks */
+                overflow: hidden;             /* Hide the text that overflows */
+                border-right: 3px solid white;/* Create a cursor effect */
+                width: 0;                     /* Start with zero width */
+                animation: typing 3s steps(10, end), blink 0.75s step-end infinite; /* Animation timing */
+            }
+
+            /* Typing effect */
+            @keyframes typing {
+                from { width: 0; }
+                to { width: 100%; }
+            }
+
+            /* Blinking cursor effect */
+            @keyframes blink {
+                from, to { border-color: transparent; }
+                50% { border-color: white; }
             }
 
             .line1 {
                 font-size: 24px;
-                color: #ffffff; /* Change text color for visibility */
+                color: #ffffff; 
             }
 
             .line2 {
                 font-size: 24px;
-                color: #ffffff; /* Change text color for visibility */
+                color: #ffffff; 
             }
         </style>
     </head>
