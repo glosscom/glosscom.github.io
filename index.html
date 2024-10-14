@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script src="script.js" defer></script>
+        <link href=""styles.css" rel="stylesheet">
         <title>gloss's site</title>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
         <style>
@@ -8,19 +10,8 @@
                 font-family: 'Roboto', sans-serif;
                 background-image: url('https://files.catbox.moe/tuoqf1.jpg'); 
                 background-size: cover; 
-                background-position: center; 
+                background-position: fill; 
                 margin: 20px;
-            }
-
-            h1 {
-                color: #ffffff;
-                font-weight: 700;
-                font-size: 80px;
-                white-space: nowrap;         /* Prevent line breaks */
-                overflow: hidden;            /* Hide overflowing text */
-                border-right: 1px solid white; /* Create a cursor effect */
-                width: 1ch;                 /* Limit width to fit 6 characters ("Hello.") */
-                animation: typing 5s steps(6, end), blink 0.5s step-end infinite; /* 6 steps for "Hello." */
             }
 
             .line1 {
@@ -36,9 +27,24 @@
     </head>
 <body>
 <ul>
-    <li>about me</li>
-    <li>home</li>
-    <li>projects</li>
+    <li data-tab-target="#about me">about me</li>
+    <li data-tab-target="#home">home</li>
+    <li data-tab-target="#projects">projects</li>
 </ul>
+
+<div class=""tab-content">
+    <div id="about me" data-tab-content>
+        <h1>about me</h1>
+        <p>placeholder</p>
+    </div>
+    <div id="home"data-tab-content>
+        <h1>home</h1>
+        <p>placeholder</p>
+    </div>
+    <div id="projects"data-tab-content>
+        <h1>projects</h1>
+        <p>placeholder</p>
+    </div>
+</div>
 </body>
 </html>
