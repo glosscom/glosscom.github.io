@@ -23,18 +23,6 @@
                 animation: typing 5s steps(6, end), blink 0.5s step-end infinite; /* 6 steps for "Hello." */
             }
 
-            /* Typing effect */
-            @keyframes typing {
-                from { width: 0; }
-                to { width: 8ch; } /* 12ch matches the width of 6 characters */
-            }
-
-            /* Blinking cursor effect */
-            @keyframes blink {
-                from, to { border-color: transparent; }
-                50% { border-color: white; }
-            }
-
             .line1 {
                 font-size: 24px;
                 color: #ffffff; 
