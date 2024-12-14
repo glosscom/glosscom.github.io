@@ -6,7 +6,7 @@
     <title>gloss</title>
     <link
       rel="icon"
-      href="https://files.catbox.moe/lthj30.png"
+      href="https://files.catbox.moe/h65fge.png"
       type="image/png"
     />
     <style>
@@ -62,10 +62,11 @@
     </div>
 
     <div id="notes">
-      <textarea placeholder="notes :3"></textarea>
+      <textarea id="notes-textarea" placeholder="notes"></textarea>
     </div>
 
     <script>
+      // Update the time every second
       function updateTime() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, "0");
@@ -73,6 +74,7 @@
         document.getElementById("time").textContent = `${hours}:${minutes}`;
       }
 
+      // Open a Google search for the input query
       function handleSearch(event) {
         if (event.key === "Enter") {
           const query = event.target.value;
@@ -83,8 +85,31 @@
         }
       }
 
-      setInterval(updateTime, 1000);
-      updateTime();
+      // Save the notes to localStorage
+      function saveNotes() {
+        const notesTextarea = document.getElementById("notes-textarea");
+        localStorage.setItem("savedNotes", notesTextarea.value);
+      }
+
+      // Load the saved notes from localStorage
+      function loadNotes() {
+        const savedNotes = localStorage.getItem("savedNotes");
+        if (savedNotes) {
+          document.getElementById("notes-textarea").value = savedNotes;
+        }
+      }
+
+      // Load notes on page load
+      window.onload = () => {
+        updateTime();
+        loadNotes();
+        setInterval(updateTime, 1000);
+
+        // Save notes on every input change
+        document
+          .getElementById("notes-textarea")
+          .addEventListener("input", saveNotes);
+      };
     </script>
   </body>
 </html>
