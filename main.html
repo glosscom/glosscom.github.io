@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gloss</title>
+    <link
+      rel="icon"
+      href="https://files.catbox.moe/lthj30.png"
+      type="image/png"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        color: rgb(255, 255, 255);
+        background: url("https://files.catbox.moe/25gdxm.PNG") no-repeat center
+          center fixed;
+        background-size: cover;
+        transition: background-color 0.5s, background-image 0.5s;
+      }
+      #time {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+      #search-bar {
+        margin-bottom: 20px;
+      }
+      #search-bar input {
+        width: 400px;
+        padding: 10px;
+        font-size: 1rem; /* Matches the font size of #time */
+        font-family: Arial, sans-serif; /* Matches the font family of #time */
+        border: none;
+        border-radius: 5px;
+      }
+      #notes {
+        margin-bottom: 20px;
+      }
+      #notes textarea {
+        width: 400px;
+        height: 200px;
+        padding: 10px;
+        font-size: 1rem; /* Matches the font size of #time */
+        font-family: Arial, sans-serif; /* Matches the font family of #time */
+        border: none;
+        border-radius: 5px;
+        resize: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="time">00:00</div>
+
+    <div id="search-bar">
+      <input type="text" onkeypress="handleSearch(event)" />
+    </div>
+
+    <div id="notes">
+      <textarea placeholder="notes :3"></textarea>
+    </div>
+
+    <script>
+      function updateTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("time").textContent = `${hours}:${minutes}`;
+      }
+
+      function handleSearch(event) {
+        if (event.key === "Enter") {
+          const query = event.target.value;
+          window.open(
+            `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+            "_blank"
+          );
+        }
+      }
+
+      setInterval(updateTime, 1000);
+      updateTime();
+    </script>
+  </body>
+</html>
