@@ -24,6 +24,30 @@
         background-size: cover;
         transition: background-color 0.5s, background-image 0.5s;
       }
+      #prayer-times {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.6);
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 1.4rem;
+        text-align: center;
+      }
+      #prayer-times ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      #prayer-times li {
+        display: inline-block;
+      }
+
       #time {
         font-size: 4rem;
         margin-bottom: 20px;
@@ -34,8 +58,8 @@
       #search-bar input {
         width: 400px;
         padding: 10px;
-        font-size: 1rem; /* Matches the font size of #time */
-        font-family: Arial, sans-serif; /* Matches the font family of #time */
+        font-size: 1rem;
+        font-family: Arial, sans-serif;
         border: none;
         border-radius: 5px;
       }
@@ -46,15 +70,72 @@
         width: 400px;
         height: 200px;
         padding: 10px;
-        font-size: 1rem; /* Matches the font size of #time */
-        font-family: Arial, sans-serif; /* Matches the font family of #time */
+        font-size: 1rem;
+        font-family: Arial, sans-serif;
         border: none;
         border-radius: 5px;
         resize: none;
       }
+
+      #settings-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      #settings-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        display: none;
+        z-index: 1000;
+        text-align: center;
+      }
+
+      #settings-modal h2 {
+        margin-top: 0;
+      }
+
+      #settings-modal button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      #modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 999;
+      }
     </style>
   </head>
   <body>
+    <div id="prayer-times">
+      <ul id="prayer-times-list">
+        Loading prayer times...
+      </ul>
+    </div>
+
     <div id="time">00:00</div>
 
     <div id="search-bar">
@@ -65,8 +146,84 @@
       <textarea id="notes-textarea" placeholder="notes"></textarea>
     </div>
 
+    <button id="settings-button" onclick="openSettings()">Settings</button>
+
+    <div id="modal-overlay" onclick="closeSettings()"></div>
+    <div id="settings-modal">
+      <div style="text-align: center">
+        <h2>Settings</h2>
+        <div style="text-align: left">
+          <label for="background-upload">Upload Background Image:</label>
+          <input type="file" id="background-upload" accept="image/*" />
+          <br /><br />
+          <label for="location-select">Select Location for Prayer Times:</label>
+          <select id="location-select">
+            <option value="Houston,USA">Houston, TX, USA</option>
+            <option value="Mecca,Saudi Arabia">Mecca, Saudi Arabia</option>
+            <option value="Cairo,Egypt">Cairo, Egypt</option>
+            <option value="Algiers,Algeria">Algiers, Algeria</option>
+            <option value="Baghdad,Iraq">Baghdad, Iraq</option>
+          </select>
+        </div>
+        <br />
+        <button onclick="closeSettings()">Close</button>
+      </div>
+    </div>
+
     <script>
-      // Update the time every second
+      const API_URL = "http://api.aladhan.com/v1/timingsByCity";
+
+      let selectedCity = "Houston";
+      let selectedCountry = "TX, USA";
+
+      function loadSettings() {
+        const savedLocation = localStorage.getItem("selectedLocation");
+        const savedBackground = localStorage.getItem("backgroundImage");
+
+        if (savedLocation) {
+          const [city, country] = savedLocation.split(",");
+          selectedCity = city;
+          selectedCountry = country;
+          document.getElementById("location-select").value = savedLocation;
+        }
+
+        if (savedBackground) {
+          document.body.style.backgroundImage = `url('${savedBackground}')`;
+        }
+      }
+
+      function saveLocation(location) {
+        localStorage.setItem("selectedLocation", location);
+      }
+
+      function saveBackground(imageUrl) {
+        localStorage.setItem("backgroundImage", imageUrl);
+      }
+
+      async function fetchPrayerTimes() {
+        try {
+          const response = await fetch(
+            `${API_URL}?city=${selectedCity}&country=${selectedCountry}&method=2`
+          );
+          const data = await response.json();
+          if (data && data.data && data.data.timings) {
+            const timings = data.data.timings;
+            const prayerTimesList =
+              document.getElementById("prayer-times-list");
+
+            prayerTimesList.innerHTML = `
+              <li>Fajr: ${timings.Fajr}</li>
+              <li>Dhuhr: ${timings.Dhuhr}</li>
+              <li>Asr: ${timings.Asr}</li>
+              <li>Maghrib: ${timings.Maghrib}</li>
+              <li>Isha: ${timings.Isha}</li>
+            `;
+          }
+        } catch (error) {
+          console.error("Failed to fetch prayer times", error);
+        }
+      }
+
       function updateTime() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, "0");
@@ -74,7 +231,6 @@
         document.getElementById("time").textContent = `${hours}:${minutes}`;
       }
 
-      // Open a Google search for the input query in the current tab
       function handleSearch(event) {
         if (event.key === "Enter") {
           const query = event.target.value;
@@ -84,13 +240,11 @@
         }
       }
 
-      // Save the notes to localStorage
       function saveNotes() {
         const notesTextarea = document.getElementById("notes-textarea");
         localStorage.setItem("savedNotes", notesTextarea.value);
       }
 
-      // Load the saved notes from localStorage
       function loadNotes() {
         const savedNotes = localStorage.getItem("savedNotes");
         if (savedNotes) {
@@ -98,16 +252,52 @@
         }
       }
 
-      // Load notes on page load
+      function openSettings() {
+        document.getElementById("settings-modal").style.display = "block";
+        document.getElementById("modal-overlay").style.display = "block";
+      }
+
+      function closeSettings() {
+        document.getElementById("settings-modal").style.display = "none";
+        document.getElementById("modal-overlay").style.display = "none";
+      }
+
+      function changeBackground(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.body.style.backgroundImage = `url('${e.target.result}')`;
+            saveBackground(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function updateLocation() {
+        const locationSelect = document.getElementById("location-select").value;
+        const [city, country] = locationSelect.split(",");
+        selectedCity = city;
+        selectedCountry = country;
+        saveLocation(locationSelect);
+        fetchPrayerTimes();
+      }
+
       window.onload = () => {
+        loadSettings();
         updateTime();
         loadNotes();
+        fetchPrayerTimes();
         setInterval(updateTime, 1000);
-
-        // Save notes on every input change
         document
           .getElementById("notes-textarea")
           .addEventListener("input", saveNotes);
+        document
+          .getElementById("background-upload")
+          .addEventListener("change", changeBackground);
+        document
+          .getElementById("location-select")
+          .addEventListener("change", updateLocation);
       };
     </script>
   </body>
