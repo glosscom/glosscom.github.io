@@ -164,6 +164,12 @@
             <option value="Algiers,Algeria">Algiers, Algeria</option>
             <option value="Baghdad,Iraq">Baghdad, Iraq</option>
           </select>
+          <br /><br />
+          <label for="time-format">Time Format:</label>
+          <select id="time-format">
+            <option value="24">24-hour</option>
+            <option value="12">12-hour</option>
+          </select>
         </div>
         <br />
         <button onclick="closeSettings()">Close</button>
@@ -175,10 +181,12 @@
 
       let selectedCity = "Houston";
       let selectedCountry = "TX, USA";
+      let timeFormat = localStorage.getItem("timeFormat") || "24";
 
       function loadSettings() {
         const savedLocation = localStorage.getItem("selectedLocation");
         const savedBackground = localStorage.getItem("backgroundImage");
+        timeFormat = localStorage.getItem("timeFormat") || "24";
 
         if (savedLocation) {
           const [city, country] = savedLocation.split(",");
@@ -190,6 +198,8 @@
         if (savedBackground) {
           document.body.style.backgroundImage = `url('${savedBackground}')`;
         }
+
+        document.getElementById("time-format").value = timeFormat;
       }
 
       function saveLocation(location) {
@@ -198,6 +208,13 @@
 
       function saveBackground(imageUrl) {
         localStorage.setItem("backgroundImage", imageUrl);
+      }
+
+      function saveTimeFormat(format) {
+        localStorage.setItem("timeFormat", format);
+        timeFormat = format;
+        updateTime();
+        fetchPrayerTimes();
       }
 
       async function fetchPrayerTimes() {
@@ -211,12 +228,23 @@
             const prayerTimesList =
               document.getElementById("prayer-times-list");
 
+            const formatTime = (time) => {
+              if (timeFormat === "12") {
+                const [hours, minutes] = time.split(":");
+                const h = parseInt(hours);
+                const suffix = h >= 12 ? "PM" : "AM";
+                const adjustedHours = h % 12 || 12;
+                return `${adjustedHours}:${minutes} ${suffix}`;
+              }
+              return time;
+            };
+
             prayerTimesList.innerHTML = `
-              <li>Fajr: ${timings.Fajr}</li>
-              <li>Dhuhr: ${timings.Dhuhr}</li>
-              <li>Asr: ${timings.Asr}</li>
-              <li>Maghrib: ${timings.Maghrib}</li>
-              <li>Isha: ${timings.Isha}</li>
+              <li>Fajr: ${formatTime(timings.Fajr)}</li>
+              <li>Dhuhr: ${formatTime(timings.Dhuhr)}</li>
+              <li>Asr: ${formatTime(timings.Asr)}</li>
+              <li>Maghrib: ${formatTime(timings.Maghrib)}</li>
+              <li>Isha: ${formatTime(timings.Isha)}</li>
             `;
           }
         } catch (error) {
@@ -226,9 +254,20 @@
 
       function updateTime() {
         const now = new Date();
-        const hours = String(now.getHours()).padStart(2, "0");
+        let hours = now.getHours();
         const minutes = String(now.getMinutes()).padStart(2, "0");
-        document.getElementById("time").textContent = `${hours}:${minutes}`;
+
+        if (timeFormat === "12") {
+          const suffix = hours >= 12 ? "PM" : "AM";
+          hours = hours % 12 || 12;
+          document.getElementById(
+            "time"
+          ).textContent = `${hours}:${minutes} ${suffix}`;
+        } else {
+          document.getElementById("time").textContent = `${String(
+            hours
+          ).padStart(2, "0")}:${minutes}`;
+        }
       }
 
       function handleSearch(event) {
@@ -298,6 +337,11 @@
         document
           .getElementById("location-select")
           .addEventListener("change", updateLocation);
+        document
+          .getElementById("time-format")
+          .addEventListener("change", (event) =>
+            saveTimeFormat(event.target.value)
+          );
       };
     </script>
   </body>
